@@ -498778,7 +498778,6 @@
 ||yousendit.com^
 ||youshareit.com^
 ||youtu.be^
-||youtube.com^
 ||zalil.ru^
 ||zcyph.cc^
 ||zenfolio.com^
