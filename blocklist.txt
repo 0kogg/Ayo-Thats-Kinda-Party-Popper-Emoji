@@ -333602,8 +333602,7 @@
 ||aomedu.com^
 ||aomegajobs.com^
 ||aomeikj.oss-cn-hongkong.aliyuncs.com^
-||aomeisoftware.com
-||anyviewer.com
+||aomeisoftware.com^
 /aomei/
 ||aomen26.com^
 ||aomencaipiao97.com^
