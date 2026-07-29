@@ -1,3 +1,4 @@
+||*.ru^
 ||11alive.com^
 /aol/
 ||25z5g623wpqpdwis.onion.to^
