@@ -1,0 +1,57 @@
+# GitLab CI for the redirect blocklist.
+#
+# blocklistredirect.txt is generated from blocklist.txt and is intentionally
+# not committed (see .gitignore). This pipeline regenerates it, keeps it as a
+# downloadable job artifact, and publishes it to GitLab Pages so there is a
+# stable URL:
+#
+#   https://ivanm12453.gitlab.io/Ayo-Thats-Kinda-Party-Popper-Emoji/blocklistredirect.txt
+#
+# The old GitHub workflow committed the generated file back to the repo; that
+# made every list update add ~50 MB to history, so it is not reproduced here.
+
+stages:
+  - build
+  - deploy
+
+default:
+  interruptible: true
+
+# Runs on merge requests so a broken generator is caught before merge.
+validate-redirect-blocklist:
+  stage: build
+  image: python:3.12-slim
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - python scripts/build_redirect_list.py
+    - test -s blocklistredirect.txt
+    - wc -l blocklistredirect.txt
+
+# Rebuilds and publishes on pushes to the default branch, on schedules, and
+# on manual runs from the UI.
+pages:
+  stage: deploy
+  image: python:3.12-slim
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      changes:
+        - blocklist.txt
+        - allowlist.txt
+        - scripts/build_redirect_list.py
+        - .gitlab-ci.yml
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+  script:
+    - python scripts/build_redirect_list.py
+    - test -s blocklistredirect.txt
+    - mkdir -p public
+    - cp blocklistredirect.txt public/
+    - ls -lh blocklistredirect.txt
+    - wc -l blocklistredirect.txt
+  artifacts:
+    name: "blocklistredirect-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - public
+      - blocklistredirect.txt
+    expire_in: never
